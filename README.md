@@ -1,4 +1,4 @@
-# Python Pygame No-WiFi Dino Remake
+# Python No-WiFi Dino Remake
 
 
 _This project is a remake of the classic no-WiFi Dino game found in Google Chrome, implemented in Python using the Pygame library. It features an infinite scrolling background (parallax effect) and replicates the gameplay experience of the original game. It is also a work in progress as of right now._
