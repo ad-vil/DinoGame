@@ -11,7 +11,7 @@ _This project is a remake of the classic no-WiFi Dino game found in Google Chrom
 
 
 ## Controls
-_work in progress_
+SPACE - Jump
 
 ## Contributing
 #### Contributions are welcome! If you have any ideas for improvements or bug fixes, feel free to open an issue or submit a pull request.
@@ -19,3 +19,4 @@ _work in progress_
 ## Log for nerds
 
 _4/27/24 - Implemented Parralax infinte scrolling background. Added textures, basic setup etc._
+_5/1/24 - Added ability to make dino jump, physics etc._
