@@ -19,4 +19,5 @@ SPACE - Jump
 ## Log for nerds
 
 _4/27/24 - Implemented Parralax infinte scrolling background. Added textures, basic setup etc._
-_5/1/24 - Added ability to make dino jump, physics etc._
+
+_5/1/24 - Added ability to make dino jump, physics etc. Added randomly spawning cactus obstacles._
