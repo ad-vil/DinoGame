@@ -2,6 +2,7 @@
 import os
 import sys
 import pygame
+import random
 
 width = 650
 height = 200
@@ -9,71 +10,6 @@ height = 200
 pygame.init()
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Dino')
-
-
-class Dino:
-
-    def __init__(self):
-        self.width = 44
-        self.height = 44
-
-        self.x = 10
-        self.y = 120
-
-        self.textureNum = 0  # to update dino between 0,1,2
-        self.dy = 2.8
-        self.gravity = 1.2
-
-        self.onGround = True  # for on ground vs jumping
-        self.jumping = False
-        self.falling = False
-        self.jumpStop = 20  # where to stop the jump
-        self.fallStop = self.y
-
-        self.setTexture()
-        self.show()
-
-    def update(self, loops):
-        # jumping
-        if self.jumping:
-            self.y -= self.dy
-            if self.y <= self.jumpStop:
-                self.fall()  # not to fall but to update values of booleans
-
-        # falling
-        elif self.falling:
-            self.y += self.gravity * self.dy
-            if self.y >= self.fallStop:
-                self.stop()
-
-        # walking
-        elif self.onGround and loops % 11 == 0:  # only receiving update every 11 ticks instead of every single tick
-            self.textureNum = (self.textureNum + 1) % 3
-            self.setTexture()
-
-
-    def show(self):
-        screen.blit(self.texture, (self.x, self.y))
-
-    def setTexture(self):
-        path = os.path.join(f'assets/images/dino{self.textureNum}.png')  # setting path for d0
-        self.texture = pygame.image.load(path)
-        self.texture = pygame.transform.scale(self.texture, (self.width, self.height))
-
-    # not to make him actually go thru the jump, but only changing bool values
-    # {
-    def jump(self):
-        self.jumping = True
-        self.onGround = False
-
-    def fall(self):
-        self.jumping = False
-        self.falling = True
-
-    def stop(self):
-        self.falling = False
-        self.onGround = True
-    # }
 
 
 class BG:
@@ -107,12 +43,117 @@ class BG:
         # width and height we gave earlier
 
 
+class Dino:
+
+    def __init__(self):
+        self.width = 44
+        self.height = 44
+
+        self.x = 10
+        self.y = 120
+
+        self.textureNum = 0  # to update dino between 0,1,2
+        self.dy = 2.7
+        self.gravity = 1
+
+        self.onGround = True  # for on ground vs jumping
+        self.jumping = False
+        self.falling = False
+        self.jumpStop = 20  # where to stop the jump
+        self.fallStop = self.y
+
+        self.setTexture()
+        self.show()
+
+    def update(self, loops):
+        # jumping
+        if self.jumping:
+            self.y -= self.dy
+            if self.y <= self.jumpStop:
+                self.fall()  # not to fall but to update values of booleans
+
+        # falling
+        elif self.falling:
+            self.y += self.gravity * self.dy
+            if self.y >= self.fallStop:
+                self.stop()
+
+        # walking
+        elif self.onGround and loops % 11 == 0:  # only receiving update every 11 ticks instead of every single tick
+            self.textureNum = (self.textureNum + 1) % 3
+            self.setTexture()
+
+    def show(self):
+        screen.blit(self.texture, (self.x, self.y))
+
+    def setTexture(self):
+        path = os.path.join(f'assets/images/dino{self.textureNum}.png')  # setting path for d0
+        self.texture = pygame.image.load(path)
+        self.texture = pygame.transform.scale(self.texture, (self.width, self.height))
+
+    # not to make him actually go thru the jump, but only changing bool values
+    # {
+    def jump(self):
+        self.jumping = True
+        self.onGround = False
+
+    def fall(self):
+        self.jumping = False
+        self.falling = True
+
+    def stop(self):
+        self.falling = False
+        self.onGround = True
+    # }
+
+
+class Cactus:
+
+    def __init__(self, x):
+        self.width = 34
+        self.height = 44
+        self.x = x
+        self.y = 120
+        self.setTexture()
+        self.show()
+
+    def update(self, dx):
+        self.x += dx  # negative to create illusion of cactus moving to the left
+
+    def show(self):
+        screen.blit(self.texture, (self.x, self.y))  # blit
+
+    def setTexture(self):
+        path = os.path.join(f'assets/images/cactus.png')  # setting texture
+        self.texture = pygame.image.load(path)
+        self.texture = pygame.transform.scale(self.texture, (self.width, self.height))
+
+
 class Game:
 
     def __init__(self):
         self.bg = [BG(x=0), BG(x=width)]
         self.dino = Dino()
+        self.obstacles = []
         self.speed = 2  # set speed for bg movement
+
+    def toSpawn(self, loops):
+        return loops % 100 == 0
+
+    def spawnCactus(self):
+        # list with cactus
+        if len(self.obstacles) > 0:
+            prevCactus = self.obstacles[-1]
+            x = random.randint(prevCactus.x + self.dino.width + 84, width + prevCactus.x + self.dino.width + 84)
+            # ensuring that the dino can fit btwn cactus
+
+        # empty list
+        else:
+            x = random.randint(width + 100, 1000)
+
+        # create new cactus
+        cactus = Cactus(x)
+        self.obstacles.append(cactus)
 
 
 def main():
@@ -136,6 +177,14 @@ def main():
         # -- DINO --
         dino.update(loops)
         dino.show()
+
+        # -- CACTUS --
+        if game.toSpawn(loops):
+            game.spawnCactus()
+
+        for cactus in game.obstacles:
+            cactus.update(-game.speed)  # updating w/ same speed as background
+            cactus.show()
 
         # -- EVENTS --
         for event in pygame.event.get():
